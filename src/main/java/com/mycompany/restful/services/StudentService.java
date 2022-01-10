@@ -145,5 +145,28 @@ public class StudentService {
         }
 
     }
+
+    public List<Student> getStudentsByDepartment(long depId) throws NotFoundException {
+        try {
+            if (!connection.isClosed()) {
+                try {
+                    Statement stmt = connection.createStatement();
+                    String sql = String.format("SELECT * FROM Student WHERE department = '%1s'", depId);
+                    ResultSet resp = stmt.executeQuery(sql);
+                    while (resp.next()) {
+                        students.add(new Student(resp.getLong("id"), resp.getString("name"), resp.getString("email"), resp.getLong("department")));
+                    }
+                    return students;
+                }
+                catch (SQLException e) {
+                    System.out.println(e.getMessage());
+                }
+            }
+        }
+        catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return students;
+    }
     
 }

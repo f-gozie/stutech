@@ -82,4 +82,12 @@ public class TeacherResource {
         teacherService.delete(id);
         return Response.status(202).entity("User deleted successfully!!").build();
     }
+
+    // Get Teachers using department ID
+    @GET
+    @Path("/department/{id}")
+    public List<Teacher> listTeachersByDepartment(@PathParam("id") long depID) {
+        System.out.println(depID);
+        return teacherService.getTeachersByDepartment(depID);
+    }
 }

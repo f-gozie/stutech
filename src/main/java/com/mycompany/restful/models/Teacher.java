@@ -17,7 +17,7 @@ public class Teacher {
     private String name;
     @Email(message="Invalid email address")
     private String email;
-//    private String students[];
+    private long department;
     
     public Teacher() {
         

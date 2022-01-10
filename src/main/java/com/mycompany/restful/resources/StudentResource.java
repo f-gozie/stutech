@@ -79,4 +79,12 @@ public class StudentResource {
         studentService.delete(id);
         return Response.status(202).entity("User deleted successfully").build();
     }
+
+    // Get students using department ID
+    @GET
+    @Path("/department/{id}")
+    public List<Student> listStudentsByDepartment(@PathParam("id") long depID) {
+        System.out.println(depID);
+        return studentService.getStudentsByDepartment(depID);
+    }
 }

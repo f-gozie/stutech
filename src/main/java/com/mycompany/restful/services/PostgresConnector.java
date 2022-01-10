@@ -15,7 +15,7 @@ import java.sql.SQLException;
 public class PostgresConnector {
     private String databaseConnectionString = "jdbc:postgresql://localhost:5432/postgres";
     private String databaseUserName = "postgres";
-    private String databasePassword = "";
+    private String databasePassword = "juggernut";
     
     
     public Connection connect() {

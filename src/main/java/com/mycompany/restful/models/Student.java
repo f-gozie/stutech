@@ -12,16 +12,18 @@ public class Student {
     private long id;
     private String name;
     private String email;
+    private long department;
     
     public Student() {
         
     }
     
-    public Student(long id, String name, String email) {
+    public Student(long id, String name, String email, long department) {
         super();
         this.id = id;
         this.name = name;
         this.email = email;
+        this.department = department;
     }
     
     public long getId() {
@@ -46,5 +48,13 @@ public class Student {
     
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public long getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(long department) {
+        this.department = department;
     }
 }

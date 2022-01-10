@@ -23,18 +23,12 @@ public class Teacher {
         
     }
     
-//    public Teacher(long id, String name, String email, String students[]) {
-//        super();
-//        this.id = id;
-//        this.name= name;
-//        this.email = email;
-//        this.students = students;
-//    }
-    public  Teacher(long id, String name, String email) {
+    public  Teacher(long id, String name, String email, long department) {
         super();
         this.id = id;
         this.name = name;
         this.email = email;
+        this.department = department;
     }
     
     public long getId() {
@@ -60,9 +54,13 @@ public class Teacher {
     public void setEmail(String email) {
         this.email = email;
     }
-    
-//    public String[] getStudents(String students[]) {
-//        return students;
-//    }
+
+    public long getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(long department) {
+        this.department = department;
+    }
    
 }

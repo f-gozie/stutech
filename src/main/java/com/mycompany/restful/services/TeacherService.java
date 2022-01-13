@@ -34,10 +34,10 @@ public class TeacherService {
             if (!connection.isClosed()) {
                 try {
                     Statement stmt = connection.createStatement();
-                    String sql = String.format("SELECT id, name, email FROM Teacher");
+                    String sql = String.format("SELECT id, name, email, department FROM Teacher");
                     ResultSet resp = stmt.executeQuery(sql);
                     while (resp.next()){
-                        teachers.add(new Teacher(resp.getLong("id"), resp.getString("name"), resp.getString("email")));
+                        teachers.add(new Teacher(resp.getLong("id"), resp.getString("name"), resp.getString("email"), resp.getLong("department")));
                     }
                     return teachers;
                 }
@@ -47,11 +47,11 @@ public class TeacherService {
             }
         }
         catch (SQLException e) {
-               System.out.println(e.getMessage());     
+           System.out.println(e.getMessage());
         }
         return teachers;
     }
-    
+
     public Teacher fetchBy(long id) throws NotFoundException {
         Teacher teacher = null;
         try {
@@ -64,7 +64,8 @@ public class TeacherService {
                         long userId = resp.getLong("id");
                         String name = resp.getString("name");
                         String email = resp.getString("email");
-                        teacher = new Teacher(userId, name, email);
+                        long department = resp.getLong("department");
+                        teacher = new Teacher(userId, name, email, department);
                         return teacher;
                     }
                 }
@@ -88,8 +89,16 @@ public class TeacherService {
                     long id = teacher.getId();
                     String name = teacher.getName();
                     String email = teacher.getEmail();
-                    
-                    String sql = String.format("INSERT INTO Teacher(id, name, email) Values('%1s', '%2s', '%3s')", id, name, email);
+                    long department = teacher.getDepartment();
+
+                    String check_sql = String.format("SELECT * FROM Department WHERE id = '%1s'", department);
+                    ResultSet resp = stmt.executeQuery(check_sql);
+                    if (!resp.isBeforeFirst()) {
+                        System.out.println("Department not found");
+                        throw new NotFoundException("The department with given ID was not found on this server");
+                    }
+
+                    String sql = String.format("INSERT INTO Teacher(id, name, email, department) Values('%1s', '%2s', '%3s', '%4s')", id, name, email, department);
                     stmt.executeUpdate(sql);
                     return teacher.getName();
                 }
@@ -137,5 +146,28 @@ public class TeacherService {
             System.out.append(e.getMessage());
         }
             
+    }
+
+    public List<Teacher> getTeachersByDepartment(long depId) throws NotFoundException {
+        try {
+            if (!connection.isClosed()) {
+                try {
+                    Statement stmt = connection.createStatement();
+                    String sql = String.format("SELECT * FROM Teacher WHERE department = '%1s'", depId);
+                    ResultSet resp = stmt.executeQuery(sql);
+                    while (resp.next()) {
+                        teachers.add(new Teacher(resp.getLong("id"), resp.getString("name"), resp.getString("email"), resp.getLong("department")));
+                    }
+                    return teachers;
+                }
+                catch (SQLException e) {
+                    System.out.println(e.getMessage());
+                }
+            }
+        }
+        catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return teachers;
     }
 }

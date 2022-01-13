@@ -33,10 +33,10 @@ public class StudentService {
             if (!connection.isClosed()) {
                 try {
                     Statement stmt = connection.createStatement();
-                    String sql = String.format("SELECT id, name, email FROM Student");
+                    String sql = String.format("SELECT id, name, email, department FROM Student");
                     ResultSet resp = stmt.executeQuery(sql);
                     while (resp.next()) {
-                        students.add(new Student(resp.getLong("id"), resp.getString("name"), resp.getString("email")));
+                        students.add(new Student(resp.getLong("id"), resp.getString("name"), resp.getString("email"), resp.getLong("department")));
                     }
                     return students;
                 }
@@ -63,7 +63,8 @@ public class StudentService {
                         long userId = resp.getLong("id");
                         String name = resp.getString("name");
                         String email = resp.getString("email");
-                        student = new Student(userId, name, email);
+                        long department = resp.getLong("department");
+                        student = new Student(userId, name, email, department);
                         return student;
                     }
                 }
@@ -87,8 +88,16 @@ public class StudentService {
                     long id = student.getId();
                     String name = student.getName();
                     String email = student.getEmail();
+                    long department = student.getDepartment();
 
-                    String sql = String.format("INSERT INTO Student(id, name, email) Values('%1s', '%2s', '%3s')", id, name, email);
+                    String check_sql = String.format("SELECT * FROM Department WHERE id = '%1s'", department);
+                    ResultSet resp = stmt.executeQuery(check_sql);
+                    if (!resp.isBeforeFirst()) {
+                        System.out.println("Department not found");
+                        throw new NotFoundException("The department with given ID was not found on this server");
+                    }
+
+                    String sql = String.format("INSERT INTO Student(id, name, email, department) Values('%1s', '%2s', '%3s', '%4s')", id, name, email, department);
                     stmt.executeUpdate(sql);
                     return student.getName();
                 }
@@ -135,6 +144,29 @@ public class StudentService {
             System.out.append(e.getMessage());
         }
 
+    }
+
+    public List<Student> getStudentsByDepartment(long depId) throws NotFoundException {
+        try {
+            if (!connection.isClosed()) {
+                try {
+                    Statement stmt = connection.createStatement();
+                    String sql = String.format("SELECT * FROM Student WHERE department = '%1s'", depId);
+                    ResultSet resp = stmt.executeQuery(sql);
+                    while (resp.next()) {
+                        students.add(new Student(resp.getLong("id"), resp.getString("name"), resp.getString("email"), resp.getLong("department")));
+                    }
+                    return students;
+                }
+                catch (SQLException e) {
+                    System.out.println(e.getMessage());
+                }
+            }
+        }
+        catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return students;
     }
     
 }

@@ -7,7 +7,7 @@ package com.mycompany.restful.resources;
 // Required Java Imports
 import java.util.List;
 
-// Required Javax Imports 
+// Required Javax Imports
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -25,66 +25,57 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 // Required Local Imports
-import com.mycompany.restful.models.Student;
-import com.mycompany.restful.services.StudentService;
-
+import com.mycompany.restful.models.Department;
+import com.mycompany.restful.services.DepartmentService;
+import javax.validation.Valid;
 /**
  *
  * @author agozie
  */
+@Path("/departments")
+public class DepartmentResource {
+    
+    private DepartmentService departmentService = new DepartmentService();
 
-@Path("/students")
-public class StudentResource {
-    
-    private StudentService studentService = new StudentService();
-    
-//    Get list of all students
+    // Get list of all departments
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public List<Student> fetchAll() {
-        return studentService.fetchAll();
+    public List<Department> fetchAll() {
+        return departmentService.fetchAll();
     }
-    
-//    Get a specific student with provided ID
+
+    // Get specific department with a provided ID
     @GET
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response get(@PathParam("id") long id) {
-        Student student = studentService.fetchBy(id);
-        return Response.ok().entity(student).build();
+    public Response get(@PathParam("id") int id) {
+        Department dep = departmentService.fetchBy(id);
+        return Response.ok().entity(dep).build();
     }
-    
-//    Create a new student
+
+    // Create a new department
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response create(Student student) {
-        String s = studentService.create(student);
-        return Response.status(Status.CREATED).entity(s).build();
+    public Response create(@Valid Department department) {
+        String dep = departmentService.create(department);
+        return Response.status(Status.CREATED).entity(dep).build();
     }
-    
-//    Update a particular student resource
+
+    // Update a particular department resource
     @PUT
     @Path("/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response update(@PathParam("id") long id, Student student) {
-        studentService.update(id, student);
+    public Response update(@PathParam("id") long id, Department department) {
+        departmentService.update(id, department);
         return Response.noContent().build();
     }
-    
-//    Delete a particular student resource
+
+    // Delete a particular department resource
     @DELETE
     @Path("/{id}")
     public Response delete(@PathParam("id") long id) {
-        studentService.delete(id);
+        departmentService.delete(id);
         return Response.status(202).entity("User deleted successfully").build();
-    }
-
-    // Get students using department ID
-    @GET
-    @Path("/department/{id}")
-    public List<Student> listStudentsByDepartment(@PathParam("id") long depID) {
-        System.out.println(depID);
-        return studentService.getStudentsByDepartment(depID);
     }
 }

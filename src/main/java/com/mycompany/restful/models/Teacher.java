@@ -6,11 +6,12 @@ package com.mycompany.restful.models;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
-
+import lombok.Getter;
 /**
  *
  * @author agozie
  */
+@Getter
 public class Teacher {
     private long id;
     @NotNull(message="Name is required")
@@ -29,38 +30,5 @@ public class Teacher {
         this.name = name;
         this.email = email;
         this.department = department;
-    }
-    
-    public long getId() {
-        return id;
-    }
-    
-    public void setId(long id) {
-        this.id = id;
-    }
-    
-    public String getName() {
-        return name;
-    }
-    
-    public void setName(String name) {
-        this.name = name;
-    }
-    
-    public String getEmail() {
-        return email;
-    }
-    
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public long getDepartment() {
-        return department;
-    }
-
-    public void setDepartment(long department) {
-        this.department = department;
-    }
-   
+    }   
 }

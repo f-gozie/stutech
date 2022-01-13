@@ -3,11 +3,12 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package com.mycompany.restful.models;
-
+import lombok.Getter;
 /**
  *
  * @author agozie
  */
+@Getter
 public class Student {
     private long id;
     private String name;

@@ -24,12 +24,12 @@ import com.mycompany.restful.services.PostgresConnector;
  * @author agozie
  */
 public class TeacherService {
-    private List<Teacher> teachers = new ArrayList<Teacher>();
     PostgresConnector conn = new PostgresConnector();
     Connection connection = conn.connect();
     
     
     public List<Teacher> fetchAll() {
+        List<Teacher> teachers = new ArrayList();
         try {
             if (!connection.isClosed()) {
                 try {
@@ -94,7 +94,6 @@ public class TeacherService {
                     String check_sql = String.format("SELECT * FROM Department WHERE id = '%1s'", department);
                     ResultSet resp = stmt.executeQuery(check_sql);
                     if (!resp.isBeforeFirst()) {
-                        System.out.println("Department not found");
                         throw new NotFoundException("The department with given ID was not found on this server");
                     }
 
@@ -149,6 +148,7 @@ public class TeacherService {
     }
 
     public List<Teacher> getTeachersByDepartment(long depId) throws NotFoundException {
+        List<Teacher> teacherList = new ArrayList();
         try {
             if (!connection.isClosed()) {
                 try {
@@ -156,9 +156,9 @@ public class TeacherService {
                     String sql = String.format("SELECT * FROM Teacher WHERE department = '%1s'", depId);
                     ResultSet resp = stmt.executeQuery(sql);
                     while (resp.next()) {
-                        teachers.add(new Teacher(resp.getLong("id"), resp.getString("name"), resp.getString("email"), resp.getLong("department")));
+                        teacherList.add(new Teacher(resp.getLong("id"), resp.getString("name"), resp.getString("email"), resp.getLong("department")));
                     }
-                    return teachers;
+                    return teacherList;
                 }
                 catch (SQLException e) {
                     System.out.println(e.getMessage());
@@ -168,6 +168,6 @@ public class TeacherService {
         catch (SQLException e) {
             System.out.println(e.getMessage());
         }
-        return teachers;
+        return teacherList;
     }
 }

@@ -28,9 +28,5 @@ public class PostgresConnector {
         }
         return conn;
     }
-    
-//    public static void main(String[] args) {
-//        PostgresConnector conn = new PostgresConnector();
-//        conn.connect();
-//    }
+
 }

@@ -24,11 +24,11 @@ import com.mycompany.restful.services.PostgresConnector;
  * @author agozie
  */
 public class StudentService {
-    private List<Student> students = new ArrayList<Student>();
     PostgresConnector conn = new PostgresConnector();
     Connection connection = conn.connect();
     
     public List<Student> fetchAll() {
+        List<Student> students = new ArrayList();
         try {
             if (!connection.isClosed()) {
                 try {
@@ -147,6 +147,7 @@ public class StudentService {
     }
 
     public List<Student> getStudentsByDepartment(long depId) throws NotFoundException {
+        List<Student> students = new ArrayList();
         try {
             if (!connection.isClosed()) {
                 try {

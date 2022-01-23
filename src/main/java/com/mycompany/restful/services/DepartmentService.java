@@ -4,17 +4,16 @@
  */
 package com.mycompany.restful.services;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.NotFoundException;
-import java.sql.Statement;
-import java.sql.ResultSet;
-import java.sql.Connection;
-import java.sql.SQLException;
+
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
+import javax.persistence.Query;
 
 import com.mycompany.restful.models.Department;
-import com.mycompany.restful.services.PostgresConnector;
 
 /**
  *
@@ -22,113 +21,88 @@ import com.mycompany.restful.services.PostgresConnector;
  */
 
 public class DepartmentService {
-    private List<Department> departments = new ArrayList<Department>();
-    PostgresConnector conn = new PostgresConnector();
-    Connection connection = conn.connect();
-    
+
+     public Department getById(long id, EntityManager manager) {
+         Department dep = manager.find(Department.class, id);
+         if (dep == null) {
+             throw new NotFoundException("The given ID was not found on this server");
+         }
+         return dep;
+     }
+
     public List<Department> fetchAll() {
-        try{
-            if (!connection.isClosed()) {
-                try {
-                    Statement stmt = connection.createStatement();
-                    String sql = String.format("SELECT id, name FROM Department");
-                    ResultSet resp = stmt.executeQuery(sql);
-                    while (resp.next()) {
-                        departments.add(new Department(resp.getLong("id"), resp.getString("name")));
-                    }
-                    return departments;
-                }
-                catch (SQLException e) {
-                    System.out.println(e.getMessage());
-                }
-            }
-        }
-        catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-        return departments;
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory("stutech_JPA");
+        EntityManager manager = emf.createEntityManager();
+
+        Query query = manager.createQuery("SELECT e FROM Department e");
+        return query.getResultList();
     }
 
-    public Department fetchBy(long id) throws NotFoundException {
-        Department department = null;
-        try{
-            if (!connection.isClosed()) {
-                try {
-                    Statement stmt = connection.createStatement();
-                    String sql = String.format("SELECT id, name FROM Department WHERE id='%1s'", id);
-                    ResultSet resp = stmt.executeQuery(sql);
+    public Department fetchBy(long id) {
+        EntityManagerFactory factory = Persistence.createEntityManagerFactory("stutech_JPA");
+        EntityManager manager = factory.createEntityManager();
+        Department departmentObject = getById(id, manager);
 
-                    while (resp.next()) {
-                        long dep_id = resp.getLong("id");
-                        String name = resp.getString("name");
-                        department = new Department(dep_id, name);
-                        return department;
-                    }
-                }
-                catch (SQLException e) {
-                    System.out.println(e.getMessage());
-                }
-            }
-        }
-        catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-        return department;
+        return departmentObject;
     }
 
     public String create(Department department) {
-        try {
-            if (!connection.isClosed()) {
-                try {
-                    Statement stmt = connection.createStatement();
-                    long id = department.getId();
-                    String name = department.getName();
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory("stutech_JPA");
 
-                    String sql = String.format("INSERT INTO Department(id, name) Values('%1s', '%2s')", id, name);
-                    stmt.executeUpdate(sql);
-                    return department.getName();
-                }
-                catch (SQLException e) {
-                    System.out.println(e.getMessage());
-                }
-            }
-        }
-        catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-        return "Check your error logs";
+        EntityManager manager = emf.createEntityManager();
+        manager.getTransaction().begin();
+
+        Department departmentObject = new Department();
+        departmentObject.setId(department.getId());
+        departmentObject.setName(department.getName());
+
+        manager.persist(departmentObject);
+        manager.getTransaction().commit();
+
+        manager.close();
+        emf.close();
+        return department.getName();
+    }
+
+    public void delete(long id) {
+        EntityManagerFactory factory = Persistence.createEntityManagerFactory("stutech_JPA");
+        EntityManager manager = factory.createEntityManager();
+        manager.getTransaction().begin();
+
+        Department department = getById(id, manager);
+        manager.remove(department);
+        manager.getTransaction().commit();
+        manager.close();
+        factory.close();
     }
 
     public void update(long id, Department department) {
-        try {
-            Statement stmt = connection.createStatement();
-            String name = department.getName();
+        EntityManagerFactory factory = Persistence.createEntityManagerFactory("stutech_JPA");
+        EntityManager manager = factory.createEntityManager();
+        manager.getTransaction().begin();
 
-            String sql = String.format("UPDATE Department SET name='%1s' WHERE id='%2s'", name, id);
-            stmt.executeUpdate(sql);
-        }
-        catch (SQLException e){
-            System.out.println(e.getMessage());
-        }
+        Department departmentObject = getById(id, manager);
+        departmentObject.setName(department.getName());
+        manager.getTransaction().commit();
+
+        manager.close();
+        factory.close();
     }
-
-    public void delete(long id) throws NotFoundException {
-        try {
-            if (!connection.isClosed()) {
-                try {
-                Statement stmt = connection.createStatement();
-                String sql = String.format("DELETE FROM Department WHERE id='%1s'", id);
-                stmt.executeUpdate(sql);
-                }
-                catch (SQLException e){
-                    System.out.println(e.getMessage());
-                }
-            }
-        }
-        catch (SQLException e) {
-            System.out.append(e.getMessage());
-        }
-
-    }
-
+    
+    //    public class EntityMap<EntityManager, EntityManagerFactory> {
+//        private EntityManager manager;
+//        private EntityManagerFactory factory;
+//        
+//        public EntityMap(EntityManager manager, EntityManagerFactory factory) {
+//            this.manager = manager;
+//            this.factory = factory;
+//        }
+//    }
+//    
+//    public EntityMap<EntityManager, EntityManagerFactory> setUpEntityManager() {
+//        EntityManagerFactory factory = Persistence.createEntityManagerFactory("stutech_JPA");
+//        EntityManager manager = factory.createEntityManager();
+//        
+//        return new EntityMap(manager, factory);
+//    }
 }

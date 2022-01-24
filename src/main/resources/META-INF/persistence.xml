@@ -16,7 +16,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/XML/XMLDocument.xml to edit this 
         <!-- <class>com.mycompany.restful.models.Student</class> -->
 
         <properties>
-            <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/postgres"/>
+            <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost:5433/postgres"/>
             <property name="javax.persistence.jdbc.user" value="postgres" />
             <property name="javax.persistence.jdbc.password" value="juggernut" />
             <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver" />
